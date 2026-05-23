@@ -1,4 +1,3 @@
-
 const MODEL_URL = "https://teachablemachine.withgoogle.com/models/SJnYq0eQY/";
 
 let model, webcam;
