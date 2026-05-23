@@ -165,3 +165,31 @@ function laadVraag() {
     }
   }, 1000);
 }
+
+function selecteerAntwoord(kant) {
+  if (antwoordGegeven) return;
+  antwoordGegeven = true;
+  clearInterval(timerInterval);
+  document.getElementById("timer-display").classList.remove("timer-urgent");
+
+  const v       = vragen[huidigeVraag];
+  const correct = kant === v.correct;
+
+  if (correct) score++;
+
+  const boxLinks  = document.getElementById("answer-left");
+  const boxRechts = document.getElementById("answer-right");
+
+  if (kant === "links") {
+    boxLinks.classList.add(correct ? "correct" : "wrong");
+  } else {
+    boxRechts.classList.add(correct ? "correct" : "wrong");
+  }
+
+   if (!correct) {
+    const correctBox = v.correct === "links" ? boxLinks : boxRechts;
+    correctBox.classList.add("correct");
+  }
+
+  setTimeout(volgendeVraag, 1500);
+}
