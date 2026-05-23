@@ -364,3 +364,42 @@ h1 span {
   0%, 100% { transform: translateX(0);    opacity: 0.75; }
   50%       { transform: translateX(14px); opacity: 1;    }
 }
+
+@keyframes questionSlideIn {
+  from { opacity: 0; transform: translateY(-18px); }
+  to   { opacity: 1; transform: translateY(0);     }
+}
+.question-bubble.animate-in {
+  animation: questionSlideIn 0.35s ease both;
+}
+
+@keyframes answerFadeIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.answer-box.animate-in {
+  animation: answerFadeIn 0.4s ease both;
+}
+#answer-right.animate-in {
+  animation-delay: 0.08s;
+}
+
+@keyframes correctPop {
+  0%   { transform: scale(1);    box-shadow: none; }
+  40%  { transform: scale(1.05); box-shadow: 0 0 40px 10px rgba(34,255,34,0.55); }
+  100% { transform: scale(1);    box-shadow: none; }
+}
+.answer-box.correct {
+  animation: correctPop 0.5s ease forwards;
+}
+
+@keyframes wrongShake {
+  0%, 100% { transform: translateX(0);   }
+  15%      { transform: translateX(-12px); }
+  35%      { transform: translateX(12px);  }
+  55%      { transform: translateX(-8px);  }
+  75%      { transform: translateX(8px);   }
+}
+.answer-box.wrong {
+  animation: wrongShake 0.45s ease forwards;
+}
