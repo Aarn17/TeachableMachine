@@ -216,3 +216,82 @@ function volgendeVraag() {
     eindScherm();
   }
 }
+
+function eindScherm() {
+  clearInterval(totalTimeInterval);
+  gameState = "score";
+  showScreen("screen-score");
+  document.getElementById("camera-score").appendChild(webcam.canvas);
+
+  document.getElementById("correct-count").innerText = score;
+  const min = String(Math.floor(totalTime / 60)).padStart(2, "0");
+  const sec = String(totalTime % 60).padStart(2, "0");
+  document.getElementById("time-taken").innerText = `${min}:${sec}`;
+
+  const prevBest     = localStorage.getItem("wkquiz_highscore");
+  const prevBestTime = localStorage.getItem("wkquiz_besttime");
+  const gamesPlayed  = parseInt(localStorage.getItem("wkquiz_games_played") ?? "0");
+
+  const heeftRecord = prevBest !== null;
+  let isNewRecord = false;
+
+  if (!heeftRecord) {
+    isNewRecord = true;
+  } else {
+    const prevScore = parseInt(prevBest);
+    const prevTime  = parseInt(prevBestTime);
+    isNewRecord = score > prevScore || (score === prevScore && totalTime < prevTime);
+  }
+
+  if (isNewRecord) {
+    localStorage.setItem("wkquiz_highscore", score);
+    localStorage.setItem("wkquiz_besttime",  totalTime);
+  }
+  localStorage.setItem("wkquiz_games_played", gamesPlayed + 1);
+
+  const bestScore    = isNewRecord ? score      : parseInt(prevBest);
+  const bestTimeSec  = isNewRecord ? totalTime  : parseInt(prevBestTime);
+  const bestMin      = String(Math.floor(bestTimeSec / 60)).padStart(2, "0");
+  const bestSec      = String(bestTimeSec % 60).padStart(2, "0");
+
+  document.getElementById("personal-best").textContent = `${bestScore}/5`;
+  document.getElementById("best-time").textContent     = `${bestMin}:${bestSec}`;
+  document.getElementById("games-played").textContent  = gamesPlayed + 1;
+
+  const recordEl = document.getElementById("new-record");
+  recordEl.style.display = isNewRecord ? "block" : "none";
+  if (isNewRecord) {
+    recordEl.classList.remove("animate-in");
+    void recordEl.offsetWidth;
+    recordEl.classList.add("animate-in");
+  }
+
+  const scoreboard  = document.querySelector(".scoreboard");
+  const camScore    = document.querySelector(".camera-score");
+  const finalScore  = document.getElementById("final-score");
+  scoreboard.classList.remove("animate-in");
+  camScore.classList.remove("animate-in");
+  finalScore.classList.remove("animate-in");
+  scoreboard.offsetHeight;
+  scoreboard.classList.add("animate-in");
+  camScore.classList.add("animate-in");
+  finalScore.classList.add("animate-in");
+
+  let teller = 0;
+  finalScore.textContent = "0/5";
+  const countUp = setInterval(() => {
+    teller++;
+    finalScore.textContent = `${teller}/5`;
+    if (teller >= score) clearInterval(countUp);
+  }, 200);
+}
+
+function herstartGame() {
+  startSequence    = [];
+  currentPose      = "Middle";
+  gameState        = "start";
+  showScreen("screen-start");
+  document.getElementById("camera-start").appendChild(webcam.canvas);
+}
+
+init();
