@@ -75,3 +75,33 @@ function handlePoseChange(pose) {
     handleScoreDetectie(pose);
   }
 }
+
+function handleStartDetectie(pose) {
+  if (pose === "Middle") return;
+
+  startSequence.push(pose);
+  if (startSequence.length > 2) startSequence.shift();
+
+  if (startSequence.length === 2) {
+    const [a, b] = startSequence;
+    if ((a === "Left" && b === "Right") || (a === "Right" && b === "Left")) {
+      startSequence = [];
+      startGame();
+    }
+  }
+}
+
+function handleGameDetectie(pose) {
+  if (antwoordGegeven) return;
+  if (answerCooldown)  return;
+  if (pose === "Middle") return;
+
+  if (pose === "Left")  selecteerAntwoord("links");
+  if (pose === "Right") selecteerAntwoord("rechts");
+}
+
+function handleScoreDetectie(pose) {
+  if (pose === "Left" || pose === "Right") {
+    herstartGame();
+  }
+}
