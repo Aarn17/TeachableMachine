@@ -193,3 +193,26 @@ function selecteerAntwoord(kant) {
 
   setTimeout(volgendeVraag, 1500);
 }
+
+function tijdVoorbij() {
+  if (antwoordGegeven) return;
+  antwoordGegeven = true;
+  document.getElementById("timer-display").classList.remove("timer-urgent");
+
+  const v = vragen[huidigeVraag];
+  const correctBox = v.correct === "links"
+    ? document.getElementById("answer-left")
+    : document.getElementById("answer-right");
+  correctBox.classList.add("correct");
+
+  setTimeout(volgendeVraag, 1500);
+}
+
+function volgendeVraag() {
+  huidigeVraag++;
+  if (huidigeVraag < vragen.length) {
+    laadVraag();
+  } else {
+    eindScherm();
+  }
+}
