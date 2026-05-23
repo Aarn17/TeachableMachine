@@ -403,3 +403,51 @@ h1 span {
 .answer-box.wrong {
   animation: wrongShake 0.45s ease forwards;
 }
+
+@keyframes timerPulse {
+  0%, 100% { transform: scale(1);    box-shadow: none; }
+  50%       { transform: scale(1.12); box-shadow: 0 0 20px rgba(255,0,0,0.6); }
+}
+.hud-box.timer-urgent {
+  color: #ff4444 !important;
+  border-color: #ff4444 !important;
+  animation: timerPulse 0.65s ease-in-out infinite;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(50px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-50px); }
+  to   { opacity: 1; transform: translateX(0);     }
+}
+.scoreboard.animate-in {
+  animation: slideInRight 0.55s ease 0.15s both;
+}
+.camera-score.animate-in {
+  animation: slideInLeft 0.55s ease 0.15s both;
+}
+
+@keyframes recordPop {
+  0%   { transform: scale(0.6) rotate(-4deg); opacity: 0; }
+  60%  { transform: scale(1.15) rotate(2deg); }
+  100% { transform: scale(1) rotate(0deg);    opacity: 1; }
+}
+.new-record {
+  color: var(--yellow);
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 1px;
+  animation: recordPop 0.6s ease 0.7s both;
+}
+
+@keyframes scorePop {
+  from { transform: scale(0.7); opacity: 0; }
+  60%  { transform: scale(1.1);             }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.final-score.animate-in {
+  animation: scorePop 0.55s ease 0.5s both;
+}
