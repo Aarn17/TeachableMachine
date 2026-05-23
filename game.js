@@ -12,4 +12,18 @@ const vragen = [
   { vraag: "Which country became world champion in 2022?",    flagL: "argentinie",  links: "Argentina",     flagR: "frankrijk",   rechts: "France",       correct: "links"  },
 ];
 
+let gameState    = "start";
+let huidigeVraag = 0;
+let score        = 0;
+let timerInterval     = null;
+let timeLeft          = 10;
+let totalTime         = 0;
+let totalTimeInterval = null;
+let antwoordGegeven   = false;
+let startSequence     = [];
 
+let answerCooldown = false; 
+
+const POSE_HOLD_MS  = 400;
+let pendingPose     = null;
+let pendingPoseTime = 0;
