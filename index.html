@@ -12,6 +12,7 @@
 </head>
 <body>
 
+ 
   <div id="screen-start" class="screen active">
     <div class="bg"><img src="images/background.png" alt="background"></div>
 
@@ -29,5 +30,43 @@
       </div>
 
       <p class="hint-text">Do this emote to start the quiz!</p>
+    </div>
+  </div>
+
+  <div id="screen-game" class="screen">
+    <div class="bg"><img src="images/background.png" alt="background"></div>
+
+    <div class="page">
+
+      <div class="hud">
+        <div class="hud-box" id="timer-display">Time left : 10s</div>
+        <div class="question-bubble">
+          <p class="question-text" id="question-text">Welk land won het WK 2018?</p>
+        </div>
+        <div class="hud-box" id="question-counter">Question : 1/5</div>
+      </div>
+
+      <div class="game-area">
+
+        <div class="side-panel">
+          <div class="answer-box" id="answer-left">
+            <img class="flag" id="flag-left" src="images/frankrijk.png" alt="vlag">
+            <p class="country-name" id="country-left">France</p>
+          </div>
+          <img src="images/arrow-left.svg" class="game-arrow" alt="left">
+        </div>
+
+        <div class="camera-center" id="camera-game"></div>
+
+        <div class="side-panel">
+          <div class="answer-box" id="answer-right">
+            <img class="flag" id="flag-right" src="images/kroatie.png" alt="vlag">
+            <p class="country-name" id="country-right">Croatia</p>
+          </div>
+          <img src="images/arrow-right.svg" class="game-arrow" alt="right">
+        </div>
+
+      </div>
+
     </div>
   </div>
