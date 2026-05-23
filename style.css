@@ -1,0 +1,55 @@
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --yellow: #e8c900;
+  --dark-teal: #0E2321;
+  --mid-green: #285E33;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  font-family: 'Barlow Condensed', 'Arial Black', sans-serif;
+  background: #050f05;
+  overflow: hidden;
+}
+
+.screen {
+  display: none;
+  position: absolute;
+  inset: 0;
+}
+
+.screen.active {
+  display: block;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 20px 40px;
+  gap: 18px;
+}
