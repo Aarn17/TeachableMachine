@@ -70,3 +70,41 @@
 
     </div>
   </div>
+
+
+    <div id="screen-score" class="screen">
+    <div class="bg"><img src="images/background.png" alt="background"></div>
+
+    <div class="page">
+      <h1 class="finished-title">Quiz Finished</h1>
+
+      <div class="score-middle">
+        
+        <div class="box camera-score" id="camera-score"></div>
+
+        <div class="scoreboard">
+          <div class="scoreboard-header">Scoreboard</div>
+          <div class="scoreboard-body">
+            <p class="final-score-label">Final Score:</p>
+            <p class="final-score" id="final-score">0/5</p>
+            <div class="score-details">
+              <div class="score-row">
+                <span>Correct answers:</span>
+                <span id="correct-count">0</span>
+              </div>
+              <div class="score-row">
+                <span>Time taken:</span>
+                <span id="time-taken">00:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="hint-text">Jump left or right to play again!</p>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
