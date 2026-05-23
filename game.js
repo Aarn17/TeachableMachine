@@ -105,3 +105,63 @@ function handleScoreDetectie(pose) {
     herstartGame();
   }
 }
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function startGame() {
+  gameState    = "game";
+  huidigeVraag = 0;
+  score        = 0;
+  totalTime    = 0;
+  currentPose  = "Middle"; 
+
+  showScreen("screen-game");
+  document.getElementById("camera-game").appendChild(webcam.canvas);
+
+  clearInterval(totalTimeInterval);
+  totalTimeInterval = setInterval(() => totalTime++, 1000);
+
+  laadVraag();
+}
+
+function laadVraag() {
+  antwoordGegeven = false;
+  answerCooldown  = true;  
+  setTimeout(() => { answerCooldown = false; }, 1500);
+
+  timeLeft = 10;
+  const v  = vragen[huidigeVraag];
+
+  document.getElementById("question-text").innerText    = v.vraag;
+  document.getElementById("flag-left").src              = `images/${v.flagL}.png`;
+  document.getElementById("flag-right").src             = `images/${v.flagR}.png`;
+  document.getElementById("country-left").innerText     = v.links;
+  document.getElementById("country-right").innerText    = v.rechts;
+  document.getElementById("question-counter").innerText = `Question : ${huidigeVraag + 1}/5`;
+  document.getElementById("timer-display").innerText    = `Time left : ${timeLeft}s`;
+
+  document.getElementById("answer-left").className  = "answer-box animate-in";
+  document.getElementById("answer-right").className = "answer-box animate-in";
+  document.getElementById("timer-display").classList.remove("timer-urgent");
+
+  const qBubble = document.querySelector(".question-bubble");
+  qBubble.classList.remove("animate-in");
+  qBubble.offsetHeight; 
+  qBubble.classList.add("animate-in");
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    document.getElementById("timer-display").innerText = `Time left : ${timeLeft}s`;
+    if (timeLeft <= 3 && timeLeft > 0) {
+      document.getElementById("timer-display").classList.add("timer-urgent");
+    }
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      tijdVoorbij();
+    }
+  }, 1000);
+}
