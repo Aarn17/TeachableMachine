@@ -228,43 +228,6 @@ function eindScherm() {
   const sec = String(totalTime % 60).padStart(2, "0");
   document.getElementById("time-taken").innerText = `${min}:${sec}`;
 
-  const prevBest     = localStorage.getItem("wkquiz_highscore");
-  const prevBestTime = localStorage.getItem("wkquiz_besttime");
-  const gamesPlayed  = parseInt(localStorage.getItem("wkquiz_games_played") ?? "0");
-
-  const heeftRecord = prevBest !== null;
-  let isNewRecord = false;
-
-  if (!heeftRecord) {
-    isNewRecord = true;
-  } else {
-    const prevScore = parseInt(prevBest);
-    const prevTime  = parseInt(prevBestTime);
-    isNewRecord = score > prevScore || (score === prevScore && totalTime < prevTime);
-  }
-
-  if (isNewRecord) {
-    localStorage.setItem("wkquiz_highscore", score);
-    localStorage.setItem("wkquiz_besttime",  totalTime);
-  }
-  localStorage.setItem("wkquiz_games_played", gamesPlayed + 1);
-
-  const bestScore    = isNewRecord ? score      : parseInt(prevBest);
-  const bestTimeSec  = isNewRecord ? totalTime  : parseInt(prevBestTime);
-  const bestMin      = String(Math.floor(bestTimeSec / 60)).padStart(2, "0");
-  const bestSec      = String(bestTimeSec % 60).padStart(2, "0");
-
-  document.getElementById("personal-best").textContent = `${bestScore}/5`;
-  document.getElementById("best-time").textContent     = `${bestMin}:${bestSec}`;
-  document.getElementById("games-played").textContent  = gamesPlayed + 1;
-
-  const recordEl = document.getElementById("new-record");
-  recordEl.style.display = isNewRecord ? "block" : "none";
-  if (isNewRecord) {
-    recordEl.classList.remove("animate-in");
-    void recordEl.offsetWidth;
-    recordEl.classList.add("animate-in");
-  }
 
   const prevBest     = localStorage.getItem("wkquiz_highscore");
   const prevBestTime = localStorage.getItem("wkquiz_besttime");
