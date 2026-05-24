@@ -27,6 +27,202 @@ const POSE_HOLD_MS  = 400;
 let pendingPose     = null;
 let pendingPoseTime = 0;
 
+// SOUND EFFECTS : AI GEBRUIKT
+let audioCtx  = null;
+let bgPlaying = false;
+let bgTimer   = null;
+let bgBeat    = 0;
+
+const BPM     = 120;
+const BEAT_MS = (60 / BPM) * 1000; 
+
+const BG_MELODY = [523.25, 659.25, 783.99, 659.25, 587.33, 523.25, 659.25, 783.99]; 
+const BG_BASS   = [130.81, 195.99, 130.81, 195.99];                                 
+const BG_CHORDS = [
+  [261.63, 329.63, 392.00], 
+  [195.99, 246.94, 293.66], 
+];
+
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  return audioCtx;
+}
+
+function tone(freq, type, startT, dur, vol) {
+  const ctx = getCtx();
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  env.gain.setValueAtTime(vol, startT);
+  env.gain.exponentialRampToValueAtTime(0.0001, startT + dur);
+  osc.connect(env);
+  env.connect(ctx.destination);
+  osc.start(startT);
+  osc.stop(startT + dur + 0.01);
+}
+
+function playWhoosh() {
+  const ctx  = getCtx();
+  const len  = Math.floor(ctx.sampleRate * 0.5);
+  const buf  = ctx.createBuffer(1, len, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+  const src  = ctx.createBufferSource();
+  src.buffer = buf;
+  const filt = ctx.createBiquadFilter();
+  filt.type  = "bandpass";
+  filt.frequency.setValueAtTime(100, ctx.currentTime);
+  filt.frequency.exponentialRampToValueAtTime(5000, ctx.currentTime + 0.5);
+  filt.Q.value = 0.8;
+  const env  = ctx.createGain();
+  env.gain.setValueAtTime(0, ctx.currentTime);
+  env.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.06);
+  env.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+  src.connect(filt);
+  filt.connect(env);
+  env.connect(ctx.destination);
+  src.start();
+}
+
+function playTick() {
+  const ctx = getCtx();
+  tone(900, "square", ctx.currentTime, 0.07, 0.12);
+}
+
+function playTimerBeep() {
+  const ctx = getCtx();
+  tone(880, "sine", ctx.currentTime, 0.13, 0.2);
+}
+
+function playSuccess() {
+  const ctx = getCtx();
+  const t   = ctx.currentTime;
+  [[523.25, 0], [659.25, 0.1], [783.99, 0.19], [1046.5, 0.28]].forEach(([f, s]) =>
+    tone(f, "sine", t + s, 0.35, 0.22)
+  );
+}
+
+function playWrong() {
+  const ctx = getCtx();
+  const t   = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+  osc.type  = "sawtooth";
+  osc.frequency.setValueAtTime(320, t);
+  osc.frequency.exponentialRampToValueAtTime(100, t + 0.4);
+  env.gain.setValueAtTime(0.22, t);
+  env.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+  osc.connect(env);
+  env.connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.41);
+}
+
+function playTimeout() {
+  const ctx = getCtx();
+  const t   = ctx.currentTime;
+  [0, 0.2, 0.4].forEach(offset => tone(160, "sawtooth", t + offset, 0.16, 0.28));
+}
+
+function playFanfare() {
+  const ctx = getCtx();
+  const t   = ctx.currentTime;
+  [[392, 0], [523.25, 0.13], [659.25, 0.25], [783.99, 0.38], [1046.5, 0.52]].forEach(([f, s]) =>
+    tone(f, "sine", t + s, 0.35, 0.24)
+  );
+}
+
+function playNewRecord() {
+  const ctx = getCtx();
+  const t   = ctx.currentTime;
+  [[523.25, 0, 0.1], [659.25, 0.11, 0.1], [783.99, 0.22, 0.1],
+   [1046.5, 0.33, 0.15], [1318.51, 0.5, 0.5]].forEach(([f, s, d]) =>
+    tone(f, "sine", t + s, d + 0.12, 0.3)
+  );
+}
+
+function bgStep() {
+  if (!bgPlaying) return;
+  const ctx  = getCtx();
+  const t    = ctx.currentTime;
+  const beat = BEAT_MS / 1000;
+
+  tone(BG_MELODY[bgBeat % 8], "sine", t, beat * 0.85, 0.045);
+
+  if (bgBeat % 2 === 0) {
+    tone(BG_BASS[Math.floor(bgBeat / 2) % 4], "sine", t, beat * 1.9, 0.07);
+    BG_CHORDS[Math.floor(bgBeat / 4) % 2].forEach(f =>
+      tone(f, "triangle", t, beat * 0.3, 0.025)
+    );
+  }
+
+  bgBeat++;
+  bgTimer = setTimeout(bgStep, BEAT_MS);
+}
+
+function startBgMusic() {
+  if (bgPlaying) return;
+  bgPlaying = true;
+  bgBeat    = 0;
+  bgStep();
+}
+
+function stopBgMusic() {
+  bgPlaying = false;
+  if (bgTimer) { clearTimeout(bgTimer); bgTimer = null; }
+}
+
+let bgGamePlaying = false;
+let bgGameTimer   = null;
+let bgGameBeat    = 0;
+
+const BG_GAME_BEAT_MS = 900; 
+const BG_GAME_BASS    = [130.81, 130.81, 146.83, 130.81]; 
+const BG_GAME_CHORDS  = [
+  [261.63, 311.13, 392.00], 
+  [195.99, 233.08, 293.66], 
+];
+
+function bgGameStep() {
+  if (!bgGamePlaying) return;
+  const ctx  = getCtx();
+  const t    = ctx.currentTime;
+  const beat = BG_GAME_BEAT_MS / 1000;
+
+  tone(BG_GAME_BASS[bgGameBeat % 4], "sine", t, beat * 0.75, 0.055);
+
+  if (bgGameBeat % 2 === 0) {
+    BG_GAME_CHORDS[Math.floor(bgGameBeat / 2) % 2].forEach(f =>
+      tone(f, "sine", t, beat * 1.6, 0.02)
+    );
+  }
+
+  bgGameBeat++;
+  bgGameTimer = setTimeout(bgGameStep, BG_GAME_BEAT_MS);
+}
+
+function startBgGameMusic() {
+  if (bgGamePlaying) return;
+  bgGamePlaying = true;
+  bgGameBeat    = 0;
+  bgGameStep();
+}
+
+function stopBgGameMusic() {
+  bgGamePlaying = false;
+  if (bgGameTimer) { clearTimeout(bgGameTimer); bgGameTimer = null; }
+}
+
+let audioUnlocked = false;
+function unlockAudio() {
+  if (audioUnlocked) return;
+  audioUnlocked = true;
+  startBgMusic();
+}
+document.addEventListener("click", unlockAudio, { once: true });
+
 async function init() {
   model = await tmPose.load(MODEL_URL + "model.json", MODEL_URL + "metadata.json");
   webcam = new tmPose.Webcam(400, 300, true);
