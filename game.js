@@ -262,6 +262,7 @@ async function predict() {
 }
 
 function handlePoseChange(pose) {
+   unlockAudio();
   if (gameState === "start") {
     handleStartDetectie(pose);
   } else if (gameState === "game") {
@@ -313,6 +314,10 @@ function startGame() {
   totalTime    = 0;
   currentPose  = "Middle"; 
 
+  stopBgMusic();                      
+  playWhoosh();                         
+  setTimeout(startBgGameMusic, 600);     
+
   showScreen("screen-game");
   document.getElementById("camera-game").appendChild(webcam.canvas);
 
@@ -347,12 +352,15 @@ function laadVraag() {
   qBubble.offsetHeight; 
   qBubble.classList.add("animate-in");
 
+  playTick();
+
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
     timeLeft--;
     document.getElementById("timer-display").innerText = `Time left : ${timeLeft}s`;
     if (timeLeft <= 3 && timeLeft > 0) {
       document.getElementById("timer-display").classList.add("timer-urgent");
+      playTimerBeep();
     }
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
@@ -370,7 +378,12 @@ function selecteerAntwoord(kant) {
   const v       = vragen[huidigeVraag];
   const correct = kant === v.correct;
 
-  if (correct) score++;
+  if (correct) {
+  score++;
+  playSuccess();
+} else {
+  playWrong();
+}
 
   const boxLinks  = document.getElementById("answer-left");
   const boxRechts = document.getElementById("answer-right");
@@ -394,6 +407,8 @@ function tijdVoorbij() {
   antwoordGegeven = true;
   document.getElementById("timer-display").classList.remove("timer-urgent");
 
+   playTimeout();
+
   const v = vragen[huidigeVraag];
   const correctBox = v.correct === "links"
     ? document.getElementById("answer-left")
@@ -414,6 +429,7 @@ function volgendeVraag() {
 
 function eindScherm() {
   clearInterval(totalTimeInterval);
+  stopBgGameMusic();
   gameState = "score";
   showScreen("screen-score");
   document.getElementById("camera-score").appendChild(webcam.canvas);
@@ -473,6 +489,9 @@ function eindScherm() {
   camScore.classList.add("animate-in");
   finalScore.classList.add("animate-in");
 
+  playFanfare();                                        
+  if (isNewRecord) setTimeout(playNewRecord, 750);
+
   let teller = 0;
   finalScore.textContent = "0/5";
   const countUp = setInterval(() => {
@@ -488,6 +507,7 @@ function herstartGame() {
   gameState        = "start";
   showScreen("screen-start");
   document.getElementById("camera-start").appendChild(webcam.canvas);
+  startBgMusic();
 }
 
 init();
